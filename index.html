@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youtube TOP 1 - Sistema de Loop de Vídeos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #1a1f3a 0%, #0f1419 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* LOGIN STYLES */
+        #loginScreen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1a1f3a 0%, #0f1419 100%);
+            z-index: 100;
+        }
+
+        #loginScreen.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: rgba(20, 25, 40, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: #ff0000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+            color: white;
+        }
+
+        .login-box h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 0, 0, 0.5);
+        }
+
+        input::placeholder {
+            color: #666;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background: #e60000;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .credentials-hint {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* DASHBOARD STYLES */
+        #dashboardScreen {
+            display: none;
+        }
+
+        #dashboardScreen.active {
+            display: block;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(20, 25, 40, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header-title .logo {
+            width: 40px;
+            height: 40px;
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-buttons button {
+            padding: 10px 20px;
+            width: auto;
+            margin: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-buttons button:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .projects-section h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .projects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .projects-header button {
+            width: auto;
+            padding: 10px 20px;
+            margin: 0;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .project-card {
+            background: rgba(20, 25, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            border-color: rgba(255, 0, 0, 0.3);
+            background: rgba(20, 25, 40, 0.95);
+        }
+
+        .project-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .project-status {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .project-status.active {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+        }
+
+        .project-status.inactive {
+            background: rgba(255, 255, 255, 0.1);
+            color: #888;
+        }
+
+        .project-date {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .project-actions button {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .btn-open {
+            background: #ff0000;
+        }
+
+        .btn-open:hover {
+            background: #e60000;
+        }
+
+        .btn-delete {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6666;
+        }
+
+        .btn-delete:hover {
+            background: rgba(255, 0, 0, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(20, 25, 40, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: auto;
+            margin: 0;
+        }
+
+        .modal-close:hover {
+            color: #e0e0e0;
+        }
+
+        .detail-section {
+            background: rgba(20, 25, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .detail-section h3 {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .info-label {
+            color: #888;
+        }
+
+        .info-value {
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .timer {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ff0000;
+            text-align: center;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-buttons button {
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .btn-success {
+            background: #00aa00;
+        }
+
+        .btn-success:hover {
+            background: #009900;
+        }
+
+        .btn-warning {
+            background: #ff8800;
+        }
+
+        .btn-warning:hover {
+            background: #ff7700;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #e0e0e0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #e0e0e0;
+            padding: 15px 20px;
+            border-radius: 6px;
+            border-left: 4px solid #ff0000;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success {
+            border-left-color: #00aa00;
+        }
+
+        .info-box {
+            background: rgba(255, 165, 0, 0.1);
+            border-left: 3px solid #ff8800;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #ffb84d;
+        }
+
+        /* LOOP SCREEN STYLES */
+        #loopScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            z-index: 50;
+        }
+
+        #loopScreen.active {
+            display: flex;
+        }
+
+        .loop-container {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .loop-item {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border: 1px solid #333;
+        }
+
+        .loop-item iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .loop-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 20px;
+            z-index: 100;
+            min-width: 250px;
+        }
+
+        .loop-controls h3 {
+            margin-bottom: 15px;
+            color: #ff0000;
+            font-size: 16px;
+        }
+
+        .loop-timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff0000;
+            text-align: center;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .loop-info {
+            font-size: 12px;
+            color: #888;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .loop-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .loop-buttons button {
+            flex: 1;
+            padding: 10px;
+            font-size: 12px;
+            margin: 0;
+            background: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .loop-buttons button:hover {
+            background: #e60000;
+        }
+
+        .loop-buttons button.secondary {
+            background: #00aa00;
+        }
+
+        .loop-buttons button.secondary:hover {
+            background: #009900;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .loop-container {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+            }
+
+            .header-buttons {
+                width: 100%;
+            }
+
+            .header-buttons button {
+                flex: 1;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .projects-header {
+                flex-direction: column;
+            }
+
+            .projects-header button {
+                width: 100%;
+            }
+
+            .loop-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(10, 1fr);
+            }
+
+            .loop-controls {
+                top: auto;
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen">
+        <div class="login-box">
+            <div class="logo-section">
+                <div class="logo">▶</div>
+                <h1>Youtube TOP 1</h1>
+                <p>Sistema de Loop de Vídeos do YouTube</p>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Usuário</label>
+                    <input type="text" id="username" placeholder="Digite seu usuário" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" placeholder="Digite sua senha" required>
+                </div>
+                <button type="submit">Entrar</button>
+                <div class="credentials-hint">Credenciais padrão: admin / admin</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen">
+        <div class="container">
+            <div class="header">
+                <div class="header-title">
+                    <div class="logo">▶</div>
+                    <span>Youtube TOP 1</span>
+                </div>
+                <div class="header-buttons">
+                    <button onclick="downloadBackup()">💾 Backup</button>
+                    <button onclick="handleLogout()">🚪 Sair</button>
+                </div>
+            </div>
+
+            <div class="projects-section">
+                <div class="projects-header">
+                    <h2>Meus Projetos</h2>
+                    <button onclick="openNewProjectModal()" style="width: auto; padding: 10px 20px;">+ Novo Projeto</button>
+                </div>
+
+                <div id="projectsList" class="projects-grid"></div>
+
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📹</div>
+                    <h3>Nenhum projeto criado ainda</h3>
+                    <p>Clique em "Novo Projeto" para começar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Project Modal -->
+    <div id="newProjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Criar Novo Projeto</h2>
+                <button class="modal-close" onclick="closeNewProjectModal()">✕</button>
+            </div>
+            <form onsubmit="handleCreateProject(event)">
+                <div class="form-group">
+                    <label for="projectName">Nome do Projeto</label>
+                    <input type="text" id="projectName" placeholder="Ex: Campanha de Marketing" required>
+                </div>
+                <button type="submit">Criar Projeto</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Project Detail Modal -->
+    <div id="projectDetailModal" class="modal">
+        <div class="modal-content">
+            <button class="back-button" onclick="closeProjectDetail()">← Voltar ao Dashboard</button>
+            
+            <div id="projectDetail">
+                <div class="detail-section">
+                    <h3 id="detailProjectName"></h3>
+                    <div class="info-row">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value" id="detailStatus"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Criado em:</span>
+                        <span class="info-value" id="detailCreated"></span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Configurar Loop de Vídeo</h3>
+                    <div class="info-box">
+                        ✓ Os vídeos serão exibidos em 10 iframes em tela cheia. Sem necessidade de abrir o YouTube!
+                    </div>
+                    <p style="color: #888; margin-bottom: 15px; font-size: 14px;">Cole a URL do vídeo do YouTube para iniciar o loop em 10 telas</p>
+                    <div class="form-group">
+                        <label for="youtubeUrl">URL do YouTube</label>
+                        <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+                    </div>
+                    <button onclick="startLoop()" style="width: 100%; background: #ff0000; margin-top: 0;">▶ Iniciar Loop (24h)</button>
+                </div>
+
+                <div class="detail-section" id="loopControlSection" style="display: none;">
+                    <h3>Controle de Loop</h3>
+                    <div class="timer" id="loopTimer">24:00:00</div>
+                    <div class="info-row">
+                        <span class="info-label">Telas Ativas:</span>
+                        <span class="info-value" id="activeWindows">0</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn-warning" onclick="pauseLoop()">⏸ Pausar</button>
+                        <button class="btn-success" onclick="renewLoop()">🔄 Renovar Loop</button>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Como Funciona</h3>
+                    <p style="color: #888; font-size: 14px; line-height: 1.6;">
+                        Ao clicar em "Iniciar Loop", o sistema abrirá uma tela cheia com 10 iframes do YouTube em reprodução contínua por 24 horas. Após esse período, o loop pausará automaticamente. Use o botão "Renovar Loop" para continuar por mais 24 horas.
+                    </p>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="deleteCurrentProject()" style="flex: 1; background: rgba(255, 0, 0, 0.2); border: 1px solid rgba(255, 0, 0, 0.3); color: #ff6666; margin-top: 0;">🗑 Excluir Projeto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loop Screen -->
+    <div id="loopScreen">
+        <div class="loop-container" id="loopContainer"></div>
+        <div class="loop-controls">
+            <h3>Youtube TOP 1</h3>
+            <div class="loop-timer" id="loopScreenTimer">24:00:00</div>
+            <div class="loop-info">
+                <strong id="loopProjectName"></strong><br>
+                Telas: <span id="loopScreenActiveWindows">10</span>
+            </div>
+            <div class="loop-buttons">
+                <button class="secondary" onclick="renewLoopFromScreen()">🔄 Renovar</button>
+                <button onclick="pauseLoopFromScreen()">⏸ Pausar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let projects = JSON.parse(localStorage.getItem('youtubeTop1Projects')) || [];
+        let currentUser = null;
+        let currentProjectId = null;
+        let timerInterval = null;
+
+        // Initialize
+        function init() {
+            const user = localStorage.getItem('youtubeTop1User');
+            if (user) {
+                currentUser = user;
+                showDashboard();
+                renderProjects();
+                startTimerUpdate();
+            } else {
+                showLogin();
+            }
+        }
+
+        // Login Handler
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'admin' && password === 'admin') {
+                localStorage.setItem('youtubeTop1User', username);
+                currentUser = username;
+                showDashboard();
+                renderProjects();
+                startTimerUpdate();
+                showToast('Login realizado com sucesso!', 'success');
+            } else {
+                showToast('Usuário ou senha incorretos!', 'error');
+            }
+        }
+
+        // Logout Handler
+        function handleLogout() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                localStorage.removeItem('youtubeTop1User');
+                currentUser = null;
+                showLogin();
+                document.getElementById('loginForm').reset();
+                if (timerInterval) clearInterval(timerInterval);
+            }
+        }
+
+        // UI Handlers
+        function showLogin() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('dashboardScreen').classList.remove('active');
+            document.getElementById('loopScreen').classList.remove('active');
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.add('active');
+            document.getElementById('loopScreen').classList.remove('active');
+        }
+
+        function showLoopScreen() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.remove('active');
+            document.getElementById('loopScreen').classList.add('active');
+        }
+
+        function openNewProjectModal() {
+            document.getElementById('newProjectModal').classList.add('active');
+        }
+
+        function closeNewProjectModal() {
+            document.getElementById('newProjectModal').classList.remove('active');
+            document.getElementById('projectName').value = '';
+        }
+
+        function openProjectDetail(projectId) {
+            currentProjectId = projectId;
+            const project = projects.find(p => p.id === projectId);
+            if (!project) return;
+
+            document.getElementById('detailProjectName').textContent = project.name;
+            document.getElementById('detailStatus').textContent = project.status === 'running' ? '🟢 Ativo' : '⚪ Inativo';
+            document.getElementById('detailCreated').textContent = new Date(project.createdAt).toLocaleDateString('pt-BR');
+            document.getElementById('youtubeUrl').value = project.videoUrl || '';
+
+            if (project.status === 'running') {
+                document.getElementById('loopControlSection').style.display = 'block';
+                document.getElementById('activeWindows').textContent = '10';
+                updateTimerDisplay(project.remainingTime || 0);
+            } else {
+                document.getElementById('loopControlSection').style.display = 'none';
+            }
+
+            document.getElementById('projectDetailModal').classList.add('active');
+        }
+
+        function closeProjectDetail() {
+            document.getElementById('projectDetailModal').classList.remove('active');
+            currentProjectId = null;
+        }
+
+        // Project Management
+        function handleCreateProject(event) {
+            event.preventDefault();
+            const name = document.getElementById('projectName').value;
+
+            const newProject = {
+                id: Date.now(),
+                name: name,
+                videoUrl: '',
+                status: 'inactive',
+                createdAt: new Date().toISOString(),
+                startedAt: null,
+                expiresAt: null,
+                remainingTime: 0
+            };
+
+            projects.push(newProject);
+            saveProjects();
+            renderProjects();
+            closeNewProjectModal();
+            showToast('Projeto criado com sucesso!', 'success');
+        }
+
+        function deleteCurrentProject() {
+            if (!confirm('Tem certeza que deseja excluir este projeto?')) return;
+
+            projects = projects.filter(p => p.id !== currentProjectId);
+            saveProjects();
+            renderProjects();
+            closeProjectDetail();
+            showToast('Projeto excluído com sucesso!', 'success');
+        }
+
+        // Extract video ID from YouTube URL
+        function extractVideoId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
+                /youtube\.com\/embed\/([^&\n?#]+)/,
+                /youtube\.com\/v\/([^&\n?#]+)/
+            ];
+
+            for (let pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                    return match[1];
+                }
+            }
+            return null;
+        }
+
+        function startLoop() {
+            const url = document.getElementById('youtubeUrl').value;
+            if (!url) {
+                showToast('Por favor, insira a URL do YouTube', 'error');
+                return;
+            }
+
+            const videoId = extractVideoId(url);
+            if (!videoId) {
+                showToast('URL do YouTube inválida!', 'error');
+                return;
+            }
+
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+
+            project.videoUrl = url;
+            project.status = 'running';
+            project.startedAt = new Date().toISOString();
+            project.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+            project.remainingTime = 24 * 60 * 60 * 1000;
+
+            saveProjects();
+            renderProjects();
+            closeProjectDetail();
+            showToast('Loop iniciado! Abrindo tela com 10 vídeos...', 'success');
+
+            // Mostrar tela de loop
+            setTimeout(() => {
+                showLoopScreen();
+                renderLoopScreen(videoId, project.name);
+            }, 500);
+        }
+
+        function renderLoopScreen(videoId, projectName) {
+            const container = document.getElementById('loopContainer');
+            container.innerHTML = '';
+
+            // Criar 10 iframes
+            for (let i = 0; i < 10; i++) {
+                const item = document.createElement('div');
+                item.className = 'loop-item';
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1`;
+                iframe.allow = 'autoplay; encrypted-media';
+                iframe.allowFullscreen = true;
+                
+                item.appendChild(iframe);
+                container.appendChild(item);
+            }
+
+            document.getElementById('loopProjectName').textContent = projectName;
+            document.getElementById('loopScreenActiveWindows').textContent = '10';
+        }
+
+        function pauseLoop() {
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+
+            project.status = 'paused';
+            project.startedAt = null;
+            project.expiresAt = null;
+            project.remainingTime = 0;
+
+            saveProjects();
+            renderProjects();
+            openProjectDetail(currentProjectId);
+            showToast('Loop pausado!', 'success');
+        }
+
+        function pauseLoopFromScreen() {
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+
+            project.status = 'paused';
+            project.startedAt = null;
+            project.expiresAt = null;
+            project.remainingTime = 0;
+
+            saveProjects();
+            showDashboard();
+            renderProjects();
+            showToast('Loop pausado!', 'success');
+        }
+
+        function renewLoop() {
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+
+            project.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+            project.remainingTime = 24 * 60 * 60 * 1000;
+
+            saveProjects();
+            renderProjects();
+            showToast('Loop renovado por mais 24 horas!', 'success');
+        }
+
+        function renewLoopFromScreen() {
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+
+            project.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+            project.remainingTime = 24 * 60 * 60 * 1000;
+
+            saveProjects();
+            showToast('Loop renovado por mais 24 horas!', 'success');
+        }
+
+        // Rendering
+        function renderProjects() {
+            const list = document.getElementById('projectsList');
+            const empty = document.getElementById('emptyState');
+
+            if (projects.length === 0) {
+                list.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+            list.innerHTML = projects.map(project => `
+                <div class="project-card">
+                    <div class="project-name">${project.name}</div>
+                    <div class="project-status ${project.status}">
+                        ${project.status === 'running' ? '🟢 Ativo' : '⚪ Inativo'}
+                    </div>
+                    <div class="project-date">Criado em ${new Date(project.createdAt).toLocaleDateString('pt-BR')}</div>
+                    <div class="project-actions">
+                        <button class="btn-open" onclick="openProjectDetail(${project.id})">Abrir</button>
+                        <button class="btn-delete" onclick="deleteProject(${project.id})">Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteProject(projectId) {
+            if (!confirm('Tem certeza que deseja excluir este projeto?')) return;
+            projects = projects.filter(p => p.id !== projectId);
+            saveProjects();
+            renderProjects();
+            showToast('Projeto excluído com sucesso!', 'success');
+        }
+
+        // Timer Updates
+        function startTimerUpdate() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateAllTimers, 1000);
+        }
+
+        function updateAllTimers() {
+            projects.forEach(project => {
+                if (project.status === 'running' && project.expiresAt) {
+                    const now = new Date().getTime();
+                    const expires = new Date(project.expiresAt).getTime();
+                    const remaining = expires - now;
+
+                    if (remaining <= 0) {
+                        project.status = 'paused';
+                        project.remainingTime = 0;
+                    } else {
+                        project.remainingTime = remaining;
+                    }
+
+                    if (currentProjectId === project.id) {
+                        updateTimerDisplay(remaining);
+                        document.getElementById('loopScreenTimer').textContent = formatTime(remaining);
+                    }
+                }
+            });
+            saveProjects();
+        }
+
+        function updateTimerDisplay(ms) {
+            if (ms < 0) ms = 0;
+            document.getElementById('loopTimer').textContent = formatTime(ms);
+        }
+
+        function formatTime(ms) {
+            if (ms < 0) ms = 0;
+            const hours = Math.floor(ms / 3600000);
+            const minutes = Math.floor((ms % 3600000) / 60000);
+            const seconds = Math.floor((ms % 60000) / 1000);
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // Backup
+        function downloadBackup() {
+            const backup = {
+                timestamp: new Date().toISOString(),
+                projects: projects
+            };
+
+            const text = `
+===========================================
+YOUTUBE TOP 1 - BACKUP DE PROJETOS
+===========================================
+Data do Backup: ${backup.timestamp}
+Total de Projetos: ${backup.projects.length}
+===========================================
+
+${backup.projects.map((p, i) => `
+PROJETO #${i + 1}
+-------------------------------------------
+Nome: ${p.name}
+Status: ${p.status}
+URL: ${p.videoUrl || 'Não configurado'}
+Criado em: ${p.createdAt}
+Expira em: ${p.expiresAt || 'N/A'}
+-------------------------------------------
+`).join('\n')}
+
+===========================================
+FIM DO BACKUP
+===========================================
+`;
+
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', `youtube-top1-backup-${new Date().toISOString().split('T')[0]}.txt`);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+
+            showToast('Backup baixado com sucesso!', 'success');
+        }
+
+        // Storage
+        function saveProjects() {
+            localStorage.setItem('youtubeTop1Projects', JSON.stringify(projects));
+        }
+
+        // Toast Notifications
+        function showToast(message, type = 'error') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Start App
+        init();
+    </script>
+</body>
+</html>
