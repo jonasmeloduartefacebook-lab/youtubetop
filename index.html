@@ -752,7 +752,7 @@
                     <div class="info-box">
                         ✓ Os vídeos serão exibidos em 10 iframes em tela cheia. Sem necessidade de abrir o YouTube!
                     </div>
-                    <p style="color: #888; margin-bottom: 15px; font-size: 14px;">Cole a URL do vídeo do YouTube para iniciar o loop em 10 telas</p>
+                    <p style="color: #888; margin-bottom: 15px; font-size: 14px;">Cole a URL do vídeo do YouTube para iniciar o loop em 10 telas (sem som)</p>
                     <div class="form-group">
                         <label for="youtubeUrl">URL do YouTube</label>
                         <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
@@ -776,7 +776,7 @@
                 <div class="detail-section">
                     <h3>Como Funciona</h3>
                     <p style="color: #888; font-size: 14px; line-height: 1.6;">
-                        Ao clicar em "Iniciar Loop", o sistema abrirá uma tela cheia com 10 iframes do YouTube em reprodução contínua por 24 horas. Após esse período, o loop pausará automaticamente. Use o botão "Renovar Loop" para continuar por mais 24 horas.
+                        Ao clicar em "Iniciar Loop", o sistema abrirá uma tela cheia com 10 iframes do YouTube em reprodução contínua (sem som) por 24 horas. Após esse período, o loop pausará automaticamente. Use o botão "Renovar Loop" para continuar por mais 24 horas.
                     </p>
                 </div>
 
@@ -1001,7 +1001,7 @@
                 item.className = 'loop-item';
                 
                 const iframe = document.createElement('iframe');
-                iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1`;
+                iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&mute=1`;
                 iframe.allow = 'autoplay; encrypted-media';
                 iframe.allowFullscreen = true;
                 
